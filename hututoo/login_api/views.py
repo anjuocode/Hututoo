@@ -1,5 +1,6 @@
+import django
 from django.shortcuts import render
-
+from django.contrib.auth import get_user_model
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -11,11 +12,11 @@ from .serializers import *
 from .email import sendOTP
 from functools import partial
 from django.contrib.auth.hashers import make_password
-from django.shortcuts import get_object_or_404
 from rest_framework_simplejwt.tokens import RefreshToken
 
 import json
 import threading
+
 def random_with_N_digits(n):
     range_start = 10**(n-1)
     range_end = (10**n)-1
@@ -66,32 +67,27 @@ class UserRegister(APIView):
 class LoginUser(APIView):
     # permission_classes = (partial(MyPermission, ['GET', 'POST', 'HEAD']),)
     def post(self, request):
-        try:
+        # try:
             data = request.data
-            content = request.POST.get('_content')
-          
-            received_json_data=json.loads(content)
-            print(received_json_data,"//////////")
-            
-            serializer = LoginSerializer(data)
-            verify_user = User.objects.filter(email = received_json_data['email'])
-           
-            if not verify_user:
-                user = User(email = received_json_data['email'])
-                user.save()
-            else:
-                user = verify_user[0]
+            serializer = LoginSerializer(data=request.data)
+            print(data['email'],"--------------")
+            # verify_user = RegisterUser.objects.filter(email = data['email'])
+            # if not verify_user:
+            #     user = RegisterUser(email = data['email'])
+            #     user.save()
+            # else:
+            #     user = verify_user[0]
+            user, created = get_user_model().objects.get_or_create(email=data['email'])
             sendOTP(user)
             return Response({
-            'success': True,
+            'status': 200,
             'message': 'Verification code sent on the mail address. Please check',
             # 'data': serializer.data,
             })
-        except: 
-            return Response({
-            'success': False,
-            'message': 'Something went wrong',
-            })
-
+        # except: 
+        #     return Response({
+        #     'status': 400,
+        #     'message': 'Something went wrong',
+        #     })
 
 
