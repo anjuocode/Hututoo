@@ -9,21 +9,6 @@ class VerifyUserOTPSerializer(serializers.Serializer):
     otp = serializers.CharField()
 
 
-class RegitsersSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = RegisterUser
-        fields = ['id', 'email', 'is_verified']
-
-class RegitserSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = ['id', 'email', 'is_verified']
-
-
-class RegitserSerializerTransaction(serializers.ModelSerializer):
-    class Meta:
-        model = RegisterUser
-        fields = ['email']
 
 class LoginSerializer(serializers.Serializer):
     email = serializers.EmailField()
@@ -38,7 +23,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-    def to_representation(self, instance):
-        rep = super().to_representation(instance)
-        rep['user'] = RegitserSerializer(instance.user).data
-        return rep
+    # def to_representation(self, instance):
+    #     rep = super().to_representation(instance)
+    #     rep['user'] = RegitserSerializer(instance.user).data
+    #     return rep
